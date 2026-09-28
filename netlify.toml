@@ -1,0 +1,9 @@
+# Netlify config: a static single-file app, no build step.
+[build]
+  publish = "."
+
+# Always fetch the latest version of the app after a deploy.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"

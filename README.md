@@ -17,13 +17,15 @@ A fast, focused job application tracker in a single HTML file. No frameworks, no
 
 ## Usage
 
-Download `job-tracker.html` and open it in any modern browser.
+Open `index.html` in any modern browser, or use the hosted version.
 
-To host it with **GitHub Pages**, go to *Settings → Pages*, set the source to the `main` branch, root folder, then visit:
+### Deploying to Netlify
 
-```
-https://<your-username>.github.io/<repo-name>/job-tracker.html
-```
+The repo is ready for Netlify, with no build step:
+
+1. In Netlify, choose **Add new site → Import an existing project → GitHub** and pick this repo.
+2. Keep the settings from `netlify.toml`: no build command, publish directory `.`.
+3. Deploy. Each push to `main` redeploys automatically.
 
 ## Your data
 
