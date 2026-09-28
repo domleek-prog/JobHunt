@@ -1,0 +1,13 @@
+# Local tooling
+.claude/
+
+# Personal data exports: keep your real applications out of the repo
+job-applications-*.json
+
+# OS / editor clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
