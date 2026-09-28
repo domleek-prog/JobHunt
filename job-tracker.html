@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0c10">
+<title>Job Hunt</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23c8ff4d'/%3E%3Cpath d='M9 13h14v9a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2z M13 13v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2' fill='none' stroke='%2311140a' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   Design tokens
+   ========================================================================== */
+:root {
+  --bg: #0b0c10;
+  --surface: #14161c;
+  --surface-2: #1a1d25;
+  --surface-3: #232733;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.11);
+  --text: #eceef3;
+  --text-2: #9aa1b0;
+  --text-3: #666d7c;
+
+  --accent: #c8ff4d;           /* the one accent: buttons + focus */
+  --accent-ink: #12160a;
+  --accent-ring: 0 0 0 3px rgba(200, 255, 77, 0.28);
+
+  --danger: 248 113 113;
+
+  --radius: 14px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Status colours, as space-separated RGB so they can be used with any alpha.
+   These classes are the single source of truth for status colour. */
+.st-applied   { --rgb: 96 165 250; }   /* neutral blue */
+.st-response  { --rgb: 45 212 191; }   /* teal */
+.st-twoweeks  { --rgb: 251 191 36; }   /* amber */
+.st-interview { --rgb: 192 132 252; }  /* purple */
+.st-offer     { --rgb: 74 222 128; }   /* green */
+.st-rejected  { --rgb: 229 115 115; }  /* muted red */
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(900px 420px at 15% -10%, rgba(200, 255, 77, 0.06), transparent 60%),
+    radial-gradient(700px 380px at 100% 0%, rgba(125, 140, 255, 0.07), transparent 60%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv11", "ss01";
+}
+
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; padding: 0; }
+
+:focus { outline: none; }
+:focus-visible { box-shadow: var(--accent-ring); border-radius: 10px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+.wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 28px 24px 80px;
+  padding-left: max(24px, env(safe-area-inset-left));
+  padding-right: max(24px, env(safe-area-inset-right));
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 40px; padding: 0 16px;
+  border-radius: 11px;
+  font-weight: 600; font-size: 14px; letter-spacing: -0.005em;
+  transition: transform .15s var(--ease), background-color .2s, box-shadow .2s, border-color .2s, color .2s;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn svg { width: 16px; height: 16px; flex: none; }
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 6px 20px -8px rgba(200, 255, 77, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+.btn-primary:hover { background: #d6ff72; box-shadow: 0 8px 26px -8px rgba(200, 255, 77, 0.7), inset 0 1px 0 rgba(255,255,255,.5); }
+
+.btn-ghost {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  color: var(--text-2);
+}
+.btn-ghost:hover { color: var(--text); background: var(--surface-3); }
+
+.btn-danger {
+  background: rgb(var(--danger) / 0.14);
+  border: 1px solid rgb(var(--danger) / 0.35);
+  color: rgb(var(--danger));
+}
+.btn-danger:hover { background: rgb(var(--danger) / 0.24); }
+
+.btn-sm { height: 32px; padding: 0 12px; font-size: 13px; border-radius: 9px; }
+
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 11px;
+  display: inline-grid; place-items: center;
+  background: var(--surface-2); border: 1px solid var(--border-strong);
+  color: var(--text-2);
+  transition: color .2s, background-color .2s;
+}
+.icon-btn:hover { color: var(--text); background: var(--surface-3); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+.header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin-bottom: 24px;
+}
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.logo {
+  width: 42px; height: 42px; flex: none;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  background: linear-gradient(145deg, #d8ff7a, #a8e62a);
+  color: var(--accent-ink);
+  box-shadow: 0 8px 24px -10px rgba(200, 255, 77, 0.6), inset 0 1px 0 rgba(255,255,255,.5);
+}
+.logo svg { width: 22px; height: 22px; }
+.brand h1 {
+  margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+}
+.brand p { margin: 2px 0 0; color: var(--text-3); font-size: 13px; }
+.brand p strong { color: var(--text-2); font-weight: 500; }
+
+.header-actions { display: flex; align-items: center; gap: 8px; position: relative; }
+
+/* Overflow menu (export / import) */
+.more-menu {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 30;
+  min-width: 200px; padding: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.7);
+  opacity: 0; transform: translateY(-4px) scale(0.98); transform-origin: top right;
+  pointer-events: none; visibility: hidden;
+  transition: opacity .16s var(--ease), transform .16s var(--ease), visibility .16s;
+}
+.more-menu.open { opacity: 1; transform: none; pointer-events: auto; visibility: visible; }
+.more-menu button {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 9px 10px; border-radius: 8px;
+  font-size: 13.5px; color: var(--text-2); text-align: left;
+  transition: background-color .15s, color .15s;
+}
+.more-menu button:hover, .more-menu button:focus-visible { background: var(--surface-3); color: var(--text); box-shadow: none; }
+.more-menu svg { width: 16px; height: 16px; opacity: .8; }
+.more-menu .hint { padding: 8px 10px 4px; font-size: 11.5px; color: var(--text-3); border-top: 1px solid var(--border); margin-top: 4px; }
+
+/* ==========================================================================
+   Summary strip (doubles as filters)
+   ========================================================================== */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.chip {
+  position: relative;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  padding: 12px 12px 11px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-align: left;
+  overflow: hidden;
+  transition: border-color .2s, background-color .2s, box-shadow .25s, opacity .2s, transform .15s var(--ease);
+}
+/* Colour hairline along the top of each chip */
+.chip::before {
+  content: ""; position: absolute; left: 12px; right: 12px; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--rgb) / 0.55), transparent);
+  opacity: .5; transition: opacity .2s;
+}
+.chip:hover { background: var(--surface-2); border-color: rgb(var(--rgb) / 0.25); }
+.chip:hover::before { opacity: 1; }
+.chip:active { transform: scale(0.98); }
+.chip .count {
+  font-size: 22px; font-weight: 650; letter-spacing: -0.03em; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.chip .chip-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; color: var(--text-2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.chip .dot { width: 6px; height: 6px; }
+.chip.is-zero .count { color: var(--text-3); }
+
+.chip.active {
+  background: rgb(var(--rgb) / 0.1);
+  border-color: rgb(var(--rgb) / 0.45);
+  box-shadow: 0 0 0 1px rgb(var(--rgb) / 0.15), 0 10px 30px -14px rgb(var(--rgb) / 0.6);
+}
+.chip.active .count { color: rgb(var(--rgb)); }
+.chip.active .chip-label { color: var(--text); }
+.chip.active::before { opacity: 1; }
+.summary.filtering .chip:not(.active) { opacity: 0.55; }
+.summary.filtering .chip:not(.active):hover { opacity: 1; }
+
+/* ==========================================================================
+   Status pill
+   ========================================================================== */
+.dot {
+  display: inline-block; flex: none;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgb(var(--rgb));
+  box-shadow: 0 0 0 3px rgb(var(--rgb) / 0.14), 0 0 10px rgb(var(--rgb) / 0.7);
+}
+
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 30px; padding: 0 10px 0 11px;
+  border-radius: 999px;
+  font-size: 12.5px; font-weight: 550; letter-spacing: -0.005em;
+  white-space: nowrap;
+  color: rgb(var(--rgb));
+  background: linear-gradient(180deg, rgb(var(--rgb) / 0.14), rgb(var(--rgb) / 0.07));
+  border: 1px solid rgb(var(--rgb) / 0.28);
+  box-shadow: 0 0 20px -8px rgb(var(--rgb) / 0.55), inset 0 1px 0 rgb(255 255 255 / 0.05);
+  transition: background-color .2s, border-color .2s, box-shadow .25s, transform .15s var(--ease);
+}
+.pill .chev { width: 14px; height: 14px; opacity: 0.55; margin-left: -2px; transition: opacity .2s, transform .2s var(--ease); }
+button.pill:hover {
+  border-color: rgb(var(--rgb) / 0.5);
+  box-shadow: 0 0 26px -6px rgb(var(--rgb) / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+button.pill:hover .chev { opacity: 1; transform: translateY(1px); }
+button.pill[aria-expanded="true"] { border-color: rgb(var(--rgb) / 0.6); }
+button.pill[aria-expanded="true"] .chev { transform: rotate(180deg); opacity: 1; }
+button.pill:focus-visible { box-shadow: 0 0 0 3px rgb(var(--rgb) / 0.3); border-radius: 999px; }
+
+/* Plays after a status change */
+.pill.pulse { animation: pillPop .5s var(--ease); }
+@keyframes pillPop {
+  0%   { transform: scale(0.9); box-shadow: 0 0 0 0 rgb(var(--rgb) / 0.55); }
+  45%  { transform: scale(1.06); }
+  100% { transform: scale(1); box-shadow: 0 0 0 10px rgb(var(--rgb) / 0), 0 0 20px -8px rgb(var(--rgb) / 0.55); }
+}
+
+/* ==========================================================================
+   Application list
+   ========================================================================== */
+.list-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 0 4px 10px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.filter-note {
+  display: inline-flex; align-items: center; gap: 6px;
+  text-transform: none; letter-spacing: 0; font-weight: 500; font-size: 12.5px;
+  color: var(--text-2);
+}
+.filter-note button {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 999px;
+  background: var(--surface-2); border: 1px solid var(--border-strong);
+  color: var(--text-2); font-size: 12px;
+  transition: color .15s, background-color .15s;
+}
+.filter-note button:hover { color: var(--text); background: var(--surface-3); }
+.filter-note svg { width: 12px; height: 12px; }
+
+.list { list-style: none; margin: 0; padding: 0; }
+
+.row {
+  position: relative;
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 8px;
+  padding: 14px 14px 14px 18px;
+  min-height: 68px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: background-color .2s, border-color .2s, opacity .28s var(--ease),
+              transform .28s var(--ease), height .28s var(--ease),
+              margin .28s var(--ease), padding .28s var(--ease);
+}
+/* Status-coloured accent edge on the left */
+.row::before {
+  content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: rgb(var(--rgb));
+  box-shadow: 0 0 12px rgb(var(--rgb) / 0.6);
+  opacity: 0.8;
+  transition: background-color .3s, box-shadow .3s;
+}
+.row:hover { background: var(--surface-2); border-color: var(--border-strong); }
+
+.row.is-rejected { opacity: 0.5; }
+.row.is-rejected:hover, .row.is-rejected:focus-within { opacity: 0.85; }
+.row.is-rejected::before { opacity: 0.45; box-shadow: none; }
+
+.row-main { flex: 1; min-width: 0; }
+.position {
+  font-size: 15.5px; font-weight: 600; letter-spacing: -0.012em; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.company {
+  margin-top: 2px;
+  font-size: 13.5px; color: var(--text-2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.row-side { display: flex; align-items: center; gap: 6px; flex: none; }
+
+.del {
+  width: 32px; height: 32px; border-radius: 9px;
+  display: grid; place-items: center;
+  color: var(--text-3);
+  opacity: 0;
+  transition: opacity .2s, color .2s, background-color .2s;
+}
+.del svg { width: 16px; height: 16px; }
+.row:hover .del, .del:focus-visible { opacity: 1; }
+.del:hover { color: rgb(var(--danger)); background: rgb(var(--danger) / 0.1); }
+@media (hover: none) { .del { opacity: 0.6; } }
+
+/* Inline delete confirmation, slides over the row */
+.confirm {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 0 14px 0 18px;
+  background: linear-gradient(90deg, rgba(20, 22, 28, 0.92), var(--surface-2) 40%);
+  backdrop-filter: blur(2px);
+  opacity: 0; transform: translateX(12px);
+  pointer-events: none; visibility: hidden;
+  transition: opacity .2s var(--ease), transform .2s var(--ease), visibility .2s;
+}
+.confirm span { margin-right: auto; font-size: 14px; font-weight: 500; color: var(--text); }
+.row.confirming { border-color: rgb(var(--danger) / 0.35); }
+.row.confirming .confirm { opacity: 1; transform: none; pointer-events: auto; visibility: visible; }
+.row.confirming.is-rejected { opacity: 1; }
+
+/* Enter / leave animations */
+.row.entering { animation: rowIn .42s var(--ease) both; }
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+.row.just-added { animation: rowIn .42s var(--ease) both, glowIn 1.4s ease-out; }
+@keyframes glowIn {
+  0%   { box-shadow: 0 0 0 1px rgba(200, 255, 77, 0.45), 0 0 30px -6px rgba(200, 255, 77, 0.35); }
+  100% { box-shadow: 0 0 0 1px transparent, 0 0 30px -6px transparent; }
+}
+.row.leaving {
+  height: 0 !important; min-height: 0;
+  margin-bottom: 0; padding-top: 0; padding-bottom: 0;
+  opacity: 0; transform: translateX(16px);
+  border-color: transparent;
+}
+
+/* ==========================================================================
+   Empty states
+   ========================================================================== */
+.empty {
+  text-align: center;
+  padding: 56px 24px 60px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
+  animation: rowIn .45s var(--ease) both;
+}
+.empty-art { width: 128px; height: 96px; margin: 0 auto 18px; display: block; }
+.empty h2 { margin: 0 0 6px; font-size: 18px; font-weight: 650; letter-spacing: -0.02em; }
+.empty p { margin: 0 auto 22px; max-width: 340px; color: var(--text-2); font-size: 14px; }
+
+/* ==========================================================================
+   Floating status dropdown
+   ========================================================================== */
+.status-menu {
+  position: fixed; z-index: 40;
+  width: 276px; max-width: calc(100vw - 16px); padding: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(0,0,0,.3);
+  opacity: 0; transform: scale(0.96); transform-origin: top right;
+  pointer-events: none; visibility: hidden;
+  transition: opacity .15s var(--ease), transform .15s var(--ease), visibility .15s;
+}
+.status-menu.above { transform-origin: bottom right; }
+.status-menu.open { opacity: 1; transform: none; pointer-events: auto; visibility: visible; }
+.menu-item {
+  display: flex; align-items: center; gap: 11px; width: 100%;
+  padding: 9px 10px; border-radius: 9px;
+  font-size: 13.5px; font-weight: 500; color: var(--text-2); text-align: left;
+  transition: background-color .15s, color .15s;
+}
+.menu-item:hover, .menu-item:focus-visible {
+  background: rgb(var(--rgb) / 0.1); color: var(--text); box-shadow: none;
+}
+.menu-item .menu-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.menu-item .check { width: 16px; height: 16px; color: rgb(var(--rgb)); opacity: 0; }
+.menu-item[aria-checked="true"] { color: var(--text); }
+.menu-item[aria-checked="true"] .check { opacity: 1; }
+
+/* ==========================================================================
+   Add-application modal
+   ========================================================================== */
+.overlay {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: rgba(5, 6, 9, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0; visibility: hidden;
+  transition: opacity .22s var(--ease), visibility .22s;
+}
+.overlay.open { opacity: 1; visibility: visible; }
+
+.modal {
+  width: 100%; max-width: 480px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8);
+  padding: 22px;
+  transform: translateY(12px) scale(0.98);
+  transition: transform .28s var(--ease);
+}
+.overlay.open .modal { transform: none; }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.modal-head h2 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -0.02em; }
+.modal-head .icon-btn { width: 34px; height: 34px; border-radius: 10px; }
+
+.field { margin-bottom: 14px; }
+.field label, .field legend {
+  display: block; margin-bottom: 6px; padding: 0;
+  font-size: 12.5px; font-weight: 600; color: var(--text-2);
+}
+.input {
+  width: 100%; height: 44px; padding: 0 14px;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 11px;
+  font-size: 15px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.input::placeholder { color: var(--text-3); }
+.input:hover { border-color: rgba(255,255,255,.18); }
+.input:focus { border-color: rgba(200, 255, 77, 0.6); box-shadow: var(--accent-ring); }
+.input.invalid { border-color: rgb(var(--danger) / 0.7); animation: shake .35s; }
+@keyframes shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.status-options { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.status-opt { position: relative; }
+.status-opt input { position: absolute; opacity: 0; pointer-events: none; }
+.status-opt > span {
+  display: flex; align-items: center; gap: 9px;
+  height: 40px; padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 13px; font-weight: 500; color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: border-color .15s, background-color .15s, color .15s, box-shadow .2s;
+}
+.status-opt > span:hover { border-color: rgb(var(--rgb) / 0.35); color: var(--text); }
+.status-opt input:checked + span {
+  color: rgb(var(--rgb));
+  background: rgb(var(--rgb) / 0.1);
+  border-color: rgb(var(--rgb) / 0.5);
+  box-shadow: 0 0 20px -8px rgb(var(--rgb) / 0.6);
+}
+.status-opt input:focus-visible + span { box-shadow: 0 0 0 3px rgb(var(--rgb) / 0.3); }
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.kbd-hint { margin-right: auto; align-self: center; font-size: 12px; color: var(--text-3); }
+.kbd-hint kbd {
+  font-family: inherit; font-size: 11px; padding: 1px 5px; border-radius: 5px;
+  border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--text-2);
+}
+
+/* ==========================================================================
+   Toast
+   ========================================================================== */
+.toast {
+  position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 60;
+  display: flex; align-items: center; gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 11px 16px;
+  border-radius: 12px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 20px 40px -12px rgba(0,0,0,.7);
+  font-size: 13.5px; font-weight: 500;
+  transform: translate(-50%, 16px); opacity: 0; visibility: hidden;
+  transition: transform .3s var(--ease), opacity .3s var(--ease), visibility .3s;
+}
+.toast.show { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
+.toast .dot { --rgb: 200 255 77; }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 720px) {
+  .summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .wrap { padding: 18px 16px 64px; }
+  .header { margin-bottom: 18px; }
+  .logo { width: 38px; height: 38px; border-radius: 11px; }
+  .brand h1 { font-size: 19px; }
+  .btn-add-label { display: none; }
+  .btn-add { width: 40px; padding: 0; }
+  .summary { gap: 6px; margin-bottom: 18px; }
+  .chip { padding: 10px 10px 9px; }
+  .chip .count { font-size: 19px; }
+  .chip .chip-label { font-size: 11.5px; }
+
+  /* Rows stack: title on top, pill underneath */
+  .row { flex-wrap: wrap; gap: 10px; padding: 14px 10px 12px 16px; }
+  .row-main { flex-basis: 100%; }
+  .row-side { width: 100%; justify-content: space-between; }
+  .position { white-space: normal; }
+  .confirm { padding: 0 10px 0 16px; }
+
+  /* Modal becomes a bottom sheet */
+  .overlay { align-items: flex-end; padding: 0; }
+  .modal {
+    max-width: none; border-radius: 22px 22px 0 0;
+    padding: 20px 16px max(20px, env(safe-area-inset-bottom));
+    transform: translateY(100%);
+  }
+  .kbd-hint { display: none; }
+  .modal-actions .btn { flex: 1; }
+}
+
+@media (max-width: 360px) {
+  .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .status-options { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+          <rect x="3" y="7.5" width="18" height="12.5" rx="2.5"/>
+          <path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5M3 12.5h18"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Job Hunt</h1>
+        <p id="meta">Application tracker</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-primary btn-add" id="addBtn" title="Add application (N)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span class="btn-add-label">Add application</span>
+      </button>
+      <button class="icon-btn" id="moreBtn" aria-haspopup="menu" aria-expanded="false" aria-label="More options">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+      </button>
+      <div class="more-menu" id="moreMenu" role="menu">
+        <button role="menuitem" id="exportBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
+          Export to JSON
+        </button>
+        <button role="menuitem" id="importBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
+          Import from JSON
+        </button>
+        <div class="hint">Data is stored in this browser only — export to back up.</div>
+      </div>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+  </header>
+
+  <!-- ===== Summary strip / filters ===== -->
+  <nav class="summary" id="summary" aria-label="Filter by status"></nav>
+
+  <!-- ===== List ===== -->
+  <main>
+    <div class="list-head" id="listHead" hidden>
+      <span>Applications</span>
+      <span class="filter-note" id="filterNote"></span>
+    </div>
+    <ul class="list" id="list"></ul>
+    <div id="emptyState"></div>
+  </main>
+</div>
+
+<!-- ===== Floating status dropdown (shared by all rows) ===== -->
+<div class="status-menu" id="statusMenu" role="menu" aria-label="Change status"></div>
+
+<!-- ===== Add application modal ===== -->
+<div class="overlay" id="overlay" aria-hidden="true">
+  <form class="modal" id="addForm" role="dialog" aria-modal="true" aria-labelledby="modalTitle" novalidate autocomplete="off">
+    <div class="modal-head">
+      <h2 id="modalTitle">New application</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="field">
+      <label for="fPosition">Position</label>
+      <input class="input" id="fPosition" name="position" placeholder="e.g. Senior Product Designer" maxlength="200" required>
+    </div>
+    <div class="field">
+      <label for="fCompany">Company</label>
+      <input class="input" id="fCompany" name="company" placeholder="e.g. Acme Ltd" maxlength="200" required>
+    </div>
+    <fieldset class="field">
+      <legend>Status</legend>
+      <div class="status-options" id="statusOptions"></div>
+    </fieldset>
+
+    <div class="modal-actions">
+      <span class="kbd-hint"><kbd>Enter</kbd> to save · <kbd>Esc</kbd> to close</span>
+      <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+      <button type="submit" class="btn btn-primary">Add application</button>
+    </div>
+  </form>
+</div>
+
+<!-- ===== Toast ===== -->
+<div class="toast" id="toast" role="status" aria-live="polite"><span class="dot"></span><span id="toastText"></span></div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ========================================================================
+     Config
+     ======================================================================== */
+  const STORAGE_KEY = 'jobTracker.v1';
+  const FLAG_AFTER_DAYS = 14;
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  // Order matters: this is the display order everywhere.
+  const STATUSES = [
+    { key: 'applied',   label: 'Applied – Awaiting Response', short: 'Applied'   },
+    { key: 'response',  label: 'Response Received',           short: 'Response'  },
+    { key: 'twoweeks',  label: '2 Weeks – No Response',       short: '2 Weeks'   },
+    { key: 'interview', label: 'Interview Set',               short: 'Interview' },
+    { key: 'offer',     label: 'Offer Received',              short: 'Offer'     },
+    { key: 'rejected',  label: 'Rejected',                    short: 'Rejected'  },
+  ];
+  const STATUS_BY_KEY = Object.fromEntries(STATUSES.map(s => [s.key, s]));
+
+  // Small inline icons
+  const ICON = {
+    chev:  '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+    check: '<svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>',
+    x:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  };
+
+  /* ========================================================================
+     State
+     ======================================================================== */
+  const state = {
+    apps: [],          // [{ id, position, company, status, dateApplied }]
+    filter: null,      // status key or null
+    justAdded: null,   // id to animate in
+    justChanged: null, // id whose pill should pulse
+    firstRender: true,
+  };
+
+  /* ========================================================================
+     Helpers
+     ======================================================================== */
+  const $ = sel => document.querySelector(sel);
+
+  const uid = () => (crypto.randomUUID ? crypto.randomUUID()
+    : Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
+
+  const escapeHTML = str => String(str).replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // Accept a status key or its full label (friendlier for hand-edited imports).
+  const toStatusKey = value => {
+    if (STATUS_BY_KEY[value]) return value;
+    const match = STATUSES.find(s => s.label === value || s.short === value);
+    return match ? match.key : 'applied';
+  };
+
+  /**
+   * Validates and cleans a list of raw application objects.
+   * Accepts a bare array or an export object ({ applications: [...] }).
+   * Throws if the shape is unrecognisable.
+   */
+  function normalize(raw) {
+    const list = Array.isArray(raw) ? raw
+      : (raw && Array.isArray(raw.applications)) ? raw.applications : null;
+    if (!list) throw new Error('Unrecognised format');
+
+    const seen = new Set();
+    return list
+      .filter(a => a && typeof a.position === 'string' && a.position.trim()
+                     && typeof a.company === 'string' && a.company.trim())
+      .map(a => {
+        let id = typeof a.id === 'string' && a.id ? a.id : uid();
+        if (seen.has(id)) id = uid();
+        seen.add(id);
+        const time = Date.parse(a.dateApplied);
+        return {
+          id,
+          position: a.position.trim().slice(0, 200),
+          company: a.company.trim().slice(0, 200),
+          status: toStatusKey(a.status),
+          dateApplied: new Date(isNaN(time) ? Date.now() : time).toISOString(),
+        };
+      });
+  }
+
+  /* ========================================================================
+     Persistence
+     ======================================================================== */
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? normalize(JSON.parse(raw)) : [];
+    } catch (err) {
+      console.warn('Could not load saved applications:', err);
+      return [];
+    }
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.apps));
+    } catch (err) {
+      toast('Couldn’t save — storage may be full or blocked');
+    }
+  }
+
+  /**
+   * Auto-flag: anything still "Applied" 14+ days after it was added
+   * moves to "2 Weeks – No Response". Returns how many were flagged.
+   */
+  function autoFlag() {
+    const cutoff = Date.now() - FLAG_AFTER_DAYS * DAY_MS;
+    let flagged = 0;
+    for (const app of state.apps) {
+      if (app.status === 'applied' && Date.parse(app.dateApplied) <= cutoff) {
+        app.status = 'twoweeks';
+        flagged++;
+      }
+    }
+    if (flagged) save();
+    return flagged;
+  }
+
+  /* ========================================================================
+     Rendering
+     ======================================================================== */
+  const els = {
+    meta: $('#meta'),
+    summary: $('#summary'),
+    list: $('#list'),
+    listHead: $('#listHead'),
+    filterNote: $('#filterNote'),
+    empty: $('#emptyState'),
+    statusMenu: $('#statusMenu'),
+  };
+
+  function render() {
+    closeStatusMenu();
+    renderMeta();
+    renderSummary();
+    renderList();
+    state.justAdded = null;
+    state.justChanged = null;
+    state.firstRender = false;
+  }
+
+  function renderMeta() {
+    const total = state.apps.length;
+    if (!total) { els.meta.textContent = 'Application tracker'; return; }
+    const active = state.apps.filter(a => a.status !== 'rejected').length;
+    els.meta.innerHTML = `<strong>${total}</strong> application${total === 1 ? '' : 's'} · <strong>${active}</strong> active`;
+  }
+
+  function renderSummary() {
+    const counts = Object.fromEntries(STATUSES.map(s => [s.key, 0]));
+    state.apps.forEach(a => counts[a.status]++);
+
+    els.summary.classList.toggle('filtering', !!state.filter);
+    els.summary.innerHTML = STATUSES.map(s => `
+      <button class="chip st-${s.key}${state.filter === s.key ? ' active' : ''}${counts[s.key] ? '' : ' is-zero'}"
+              data-filter="${s.key}" aria-pressed="${state.filter === s.key}"
+              title="${escapeHTML(s.label)}">
+        <span class="count">${counts[s.key]}</span>
+        <span class="chip-label"><span class="dot"></span>${s.short}</span>
+      </button>`).join('');
+  }
+
+  function rowHTML(app, index) {
+    const s = STATUS_BY_KEY[app.status];
+    const classes = ['row', `st-${s.key}`];
+    if (app.status === 'rejected') classes.push('is-rejected');
+    if (app.id === state.justAdded) classes.push('just-added');
+    else if (state.firstRender) classes.push('entering');
+
+    const delay = state.firstRender ? ` style="animation-delay:${Math.min(index, 12) * 30}ms"` : '';
+    const pos = escapeHTML(app.position);
+    const co = escapeHTML(app.company);
+
+    return `
+      <li class="${classes.join(' ')}" data-id="${app.id}"${delay}>
+        <div class="row-main">
+          <div class="position" title="${pos}">${pos}</div>
+          <div class="company" title="${co}">${co}</div>
+        </div>
+        <div class="row-side">
+          <button class="pill st-${s.key}${app.id === state.justChanged ? ' pulse' : ''}"
+                  data-action="status" aria-haspopup="menu" aria-expanded="false"
+                  aria-label="Status: ${escapeHTML(s.label)}. Change status">
+            <span class="dot"></span><span>${escapeHTML(s.label)}</span>${ICON.chev}
+          </button>
+          <button class="del" data-action="delete" aria-label="Delete ${pos} at ${co}" title="Delete">${ICON.trash}</button>
+        </div>
+        <div class="confirm" aria-hidden="true">
+          <span>Delete this application?</span>
+          <button class="btn btn-ghost btn-sm" data-action="cancel-delete">Cancel</button>
+          <button class="btn btn-danger btn-sm" data-action="confirm-delete">Delete</button>
+        </div>
+      </li>`;
+  }
+
+  function renderList() {
+    // Newest first
+    const sorted = [...state.apps].sort((a, b) => Date.parse(b.dateApplied) - Date.parse(a.dateApplied));
+    const visible = state.filter ? sorted.filter(a => a.status === state.filter) : sorted;
+
+    els.list.innerHTML = visible.map(rowHTML).join('');
+    els.listHead.hidden = visible.length === 0;
+
+    // "Filtered: X  [clear]" note
+    if (state.filter) {
+      els.filterNote.innerHTML = `
+        ${visible.length} shown
+        <button data-clear-filter aria-label="Clear filter">${escapeHTML(STATUS_BY_KEY[state.filter].short)} ${ICON.x}</button>`;
+    } else {
+      els.filterNote.textContent = `${visible.length} total`;
+    }
+
+    // Empty states
+    if (state.apps.length === 0) {
+      els.empty.innerHTML = `
+        <div class="empty">
+          ${emptyArt()}
+          <h2>No applications yet</h2>
+          <p>Every offer starts with a first application. Add one and it’ll show up here.</p>
+          <button class="btn btn-primary" data-open-add>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add your first application
+          </button>
+        </div>`;
+    } else if (visible.length === 0) {
+      const s = STATUS_BY_KEY[state.filter];
+      els.empty.innerHTML = `
+        <div class="empty">
+          <h2>Nothing in “${escapeHTML(s.label)}”</h2>
+          <p>No applications have this status right now.</p>
+          <button class="btn btn-ghost" data-clear-filter>Show all applications</button>
+        </div>`;
+    } else {
+      els.empty.innerHTML = '';
+    }
+  }
+
+  // Small illustration for the empty state: a stack of cards with status dots.
+  function emptyArt() {
+    return `
+      <svg class="empty-art" viewBox="0 0 128 96" fill="none" aria-hidden="true">
+        <rect x="22" y="10" width="84" height="22" rx="7" fill="#1a1d25" stroke="rgba(255,255,255,.08)"/>
+        <rect x="14" y="37" width="100" height="24" rx="8" fill="#1f232d" stroke="rgba(255,255,255,.1)"/>
+        <rect x="22" y="66" width="84" height="22" rx="7" fill="#1a1d25" stroke="rgba(255,255,255,.08)"/>
+        <rect x="32" y="18" width="34" height="5" rx="2.5" fill="#2c3140"/>
+        <rect x="26" y="45" width="44" height="5" rx="2.5" fill="#3a4050"/>
+        <rect x="26" y="53" width="28" height="4" rx="2" fill="#2c3140"/>
+        <rect x="32" y="74" width="30" height="5" rx="2.5" fill="#2c3140"/>
+        <circle cx="94" cy="21" r="3.5" fill="rgb(96 165 250)" opacity=".8"/>
+        <circle cx="100" cy="49" r="4.5" fill="rgb(200 255 77)"/>
+        <circle cx="100" cy="49" r="9" fill="rgb(200 255 77)" opacity=".15"/>
+        <circle cx="94" cy="77" r="3.5" fill="rgb(192 132 252)" opacity=".8"/>
+      </svg>`;
+  }
+
+  /* ========================================================================
+     Actions
+     ======================================================================== */
+  function addApplication({ position, company, status }) {
+    const app = { id: uid(), position, company, status, dateApplied: new Date().toISOString() };
+    state.apps.push(app);
+    // If a filter would hide the new entry, clear it so the user sees it land.
+    if (state.filter && state.filter !== status) state.filter = null;
+    state.justAdded = app.id;
+    save();
+    render();
+  }
+
+  function setStatus(id, status) {
+    const app = state.apps.find(a => a.id === id);
+    if (!app || app.status === status) return;
+    app.status = status;
+    state.justChanged = id;
+    save();
+    render();
+    if (state.filter && state.filter !== status) {
+      toast(`Moved to “${STATUS_BY_KEY[status].label}”`);
+    }
+  }
+
+  // Animate the row out, then remove it from state.
+  function deleteApplication(row) {
+    const id = row.dataset.id;
+    row.style.height = row.offsetHeight + 'px';
+    void row.offsetHeight;          // force reflow so the height transition runs
+    row.classList.remove('confirming');
+    row.classList.add('leaving');
+    setTimeout(() => {
+      state.apps = state.apps.filter(a => a.id !== id);
+      save();
+      render();
+      toast('Application deleted');
+    }, 290);
+  }
+
+  function toggleFilter(key) {
+    state.filter = state.filter === key ? null : key;
+    render();
+  }
+
+  /* ========================================================================
+     Status dropdown
+     ======================================================================== */
+  let menuAnchor = null;
+
+  function openStatusMenu(pill) {
+    const row = pill.closest('.row');
+    const app = state.apps.find(a => a.id === row.dataset.id);
+    if (!app) return;
+
+    // Toggle closed if the same pill is clicked twice
+    if (menuAnchor === pill) { closeStatusMenu(); return; }
+    closeStatusMenu();
+
+    const menu = els.statusMenu;
+    menu.dataset.id = app.id;
+    menu.innerHTML = STATUSES.map(s => `
+      <button class="menu-item st-${s.key}" role="menuitemradio" data-status="${s.key}"
+              aria-checked="${s.key === app.status}">
+        <span class="dot"></span><span class="menu-label">${escapeHTML(s.label)}</span>${ICON.check}
+      </button>`).join('');
+
+    // Position below the pill (or above if there's no room), right-aligned.
+    const r = pill.getBoundingClientRect();
+    const mw = menu.offsetWidth, mh = menu.offsetHeight, pad = 8;
+    let left = Math.max(pad, Math.min(r.right - mw, window.innerWidth - mw - pad));
+    let top = r.bottom + 6;
+    const above = top + mh > window.innerHeight - pad && r.top - mh - 6 > pad;
+    if (above) top = r.top - mh - 6;
+    menu.style.left = left + 'px';
+    menu.style.top = top + 'px';
+    menu.classList.toggle('above', above);
+    menu.classList.add('open');
+
+    pill.setAttribute('aria-expanded', 'true');
+    menuAnchor = pill;
+    (menu.querySelector('[aria-checked="true"]') || menu.firstElementChild).focus({ preventScroll: true });
+  }
+
+  function closeStatusMenu(returnFocus = false) {
+    if (!menuAnchor) return;
+    els.statusMenu.classList.remove('open');
+    menuAnchor.setAttribute('aria-expanded', 'false');
+    if (returnFocus && document.contains(menuAnchor)) menuAnchor.focus();
+    menuAnchor = null;
+  }
+
+  els.statusMenu.addEventListener('click', e => {
+    const item = e.target.closest('[data-status]');
+    if (item) setStatus(els.statusMenu.dataset.id, item.dataset.status);
+  });
+
+  // Arrow-key navigation inside the dropdown
+  els.statusMenu.addEventListener('keydown', e => {
+    const items = [...els.statusMenu.querySelectorAll('.menu-item')];
+    const i = items.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+    if (e.key === 'Tab')       { closeStatusMenu(true); }
+  });
+
+  window.addEventListener('resize', () => closeStatusMenu());
+  window.addEventListener('scroll', () => closeStatusMenu(), { passive: true });
+
+  /* ========================================================================
+     List + summary events (delegated)
+     ======================================================================== */
+  els.list.addEventListener('click', e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const row = btn.closest('.row');
+
+    switch (btn.dataset.action) {
+      case 'status':
+        openStatusMenu(btn);
+        break;
+      case 'delete':
+        clearConfirmations();
+        row.classList.add('confirming');
+        row.querySelector('.confirm').setAttribute('aria-hidden', 'false');
+        row.querySelector('[data-action="cancel-delete"]').focus({ preventScroll: true });
+        break;
+      case 'cancel-delete':
+        clearConfirmations();
+        row.querySelector('.del').focus({ preventScroll: true });
+        break;
+      case 'confirm-delete':
+        deleteApplication(row);
+        break;
+    }
+  });
+
+  function clearConfirmations(except) {
+    document.querySelectorAll('.row.confirming').forEach(r => {
+      if (r === except) return;
+      r.classList.remove('confirming');
+      r.querySelector('.confirm').setAttribute('aria-hidden', 'true');
+    });
+  }
+
+  els.summary.addEventListener('click', e => {
+    const chip = e.target.closest('[data-filter]');
+    if (chip) toggleFilter(chip.dataset.filter);
+  });
+
+  // Buttons rendered inside dynamic content (empty states, filter note)
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-clear-filter]')) { state.filter = null; render(); }
+    if (e.target.closest('[data-open-add]')) openModal();
+
+    // Click outside closes dropdowns / pending delete confirmations
+    if (menuAnchor && !e.target.closest('#statusMenu') && !e.target.closest('[data-action="status"]')) closeStatusMenu();
+    if (!e.target.closest('.row.confirming')) clearConfirmations();
+    if (!e.target.closest('#moreMenu') && !e.target.closest('#moreBtn')) closeMoreMenu();
+  });
+
+  /* ========================================================================
+     Add-application modal
+     ======================================================================== */
+  const overlay = $('#overlay');
+  const form = $('#addForm');
+  const fPosition = $('#fPosition');
+  const fCompany = $('#fCompany');
+  let lastFocus = null;
+
+  // Build the status radio options once
+  $('#statusOptions').innerHTML = STATUSES.map((s, i) => `
+    <label class="status-opt st-${s.key}">
+      <input type="radio" name="status" value="${s.key}"${i === 0 ? ' checked' : ''}>
+      <span><span class="dot"></span>${escapeHTML(s.label)}</span>
+    </label>`).join('');
+
+  function openModal() {
+    lastFocus = document.activeElement;
+    form.reset();
+    [fPosition, fCompany].forEach(el => el.classList.remove('invalid'));
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    setTimeout(() => fPosition.focus(), 60);
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  }
+
+  $('#addBtn').addEventListener('click', openModal);
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay || e.target.closest('[data-close]')) closeModal();
+  });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const position = fPosition.value.trim();
+    const company = fCompany.value.trim();
+
+    // Highlight (and shake) any missing required field
+    let firstInvalid = null;
+    [[fPosition, position], [fCompany, company]].forEach(([el, val]) => {
+      el.classList.remove('invalid');
+      if (!val) {
+        void el.offsetWidth; // restart shake animation
+        el.classList.add('invalid');
+        firstInvalid = firstInvalid || el;
+      }
+    });
+    if (firstInvalid) { firstInvalid.focus(); return; }
+
+    const status = form.elements.status.value || 'applied';
+    closeModal();
+    addApplication({ position, company, status });
+  });
+
+  [fPosition, fCompany].forEach(el =>
+    el.addEventListener('input', () => el.classList.remove('invalid')));
+
+  // Keep Tab focus inside the modal while it's open
+  form.addEventListener('keydown', e => {
+    if (e.key !== 'Tab') return;
+    const focusables = [...form.querySelectorAll('input:not([type=radio]), input[type=radio]:checked, button')];
+    const first = focusables[0], last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+
+  /* ========================================================================
+     Export / import menu
+     ======================================================================== */
+  const moreBtn = $('#moreBtn');
+  const moreMenu = $('#moreMenu');
+  const importFile = $('#importFile');
+
+  function closeMoreMenu() {
+    moreMenu.classList.remove('open');
+    moreBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  moreBtn.addEventListener('click', () => {
+    const open = !moreMenu.classList.contains('open');
+    moreMenu.classList.toggle('open', open);
+    moreBtn.setAttribute('aria-expanded', String(open));
+    if (open) moreMenu.querySelector('button').focus({ preventScroll: true });
+  });
+
+  $('#exportBtn').addEventListener('click', () => {
+    closeMoreMenu();
+    const payload = {
+      app: 'job-tracker',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      applications: state.apps,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `job-applications-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast(`Exported ${state.apps.length} application${state.apps.length === 1 ? '' : 's'}`);
+  });
+
+  $('#importBtn').addEventListener('click', () => {
+    closeMoreMenu();
+    importFile.value = '';
+    importFile.click();
+  });
+
+  importFile.addEventListener('change', async () => {
+    const file = importFile.files[0];
+    if (!file) return;
+    try {
+      const imported = normalize(JSON.parse(await file.text()));
+      if (!imported.length) { toast('No valid applications found in that file'); return; }
+
+      if (state.apps.length && !confirm(
+        `Replace your ${state.apps.length} current application${state.apps.length === 1 ? '' : 's'} ` +
+        `with ${imported.length} from “${file.name}”?\n\nTip: export first if you want a backup.`)) return;
+
+      state.apps = imported;
+      state.filter = null;
+      const flagged = autoFlag();
+      save();
+      state.firstRender = true; // replay the entrance animation
+      render();
+      toast(`Imported ${imported.length} application${imported.length === 1 ? '' : 's'}` +
+            (flagged ? ` · ${flagged} flagged` : ''));
+    } catch (err) {
+      toast('That file isn’t a valid tracker export');
+    }
+  });
+
+  /* ========================================================================
+     Toast
+     ======================================================================== */
+  let toastTimer;
+  function toast(message) {
+    $('#toastText').textContent = message;
+    const el = $('#toast');
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+  }
+
+  /* ========================================================================
+     Global keyboard shortcuts
+     ======================================================================== */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (overlay.classList.contains('open')) closeModal();
+      else if (menuAnchor) closeStatusMenu(true);
+      else if (moreMenu.classList.contains('open')) { closeMoreMenu(); moreBtn.focus(); }
+      else clearConfirmations();
+      return;
+    }
+    // "N" opens the add form when not typing somewhere
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+    if ((e.key === 'n' || e.key === 'N') && !typing && !e.metaKey && !e.ctrlKey && !e.altKey
+        && !overlay.classList.contains('open')) {
+      e.preventDefault();
+      openModal();
+    }
+  });
+
+  /* ========================================================================
+     Boot
+     ======================================================================== */
+  state.apps = load();
+  const flagged = autoFlag();
+  render();
+  if (flagged) {
+    toast(`${flagged} application${flagged === 1 ? '' : 's'} moved to “2 Weeks – No Response”`);
+  }
+})();
+</script>
+</body>
+</html>
